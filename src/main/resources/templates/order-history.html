@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đơn hàng của tôi - EatNow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <div class="logo-box">EN</div>
+            <div class="logo-text">
+                <h1>EATNOW</h1>
+                <p>Nhanh chóng • Tươi ngon • Tuyệt vời</p>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a th:href="@{/menu}">Thực đơn</a>
+            <a th:href="@{/don-hang-cua-toi}">Đơn hàng</a>
+            <a th:href="@{/gio-hang}">🛒 Giỏ hàng</a>
+            <span style="color: #f7931e; margin-left: 20px; font-weight: 600;">
+                💰 <span th:text="${#numbers.formatDecimal(nguoiDung.soDuVi, 0, 'COMMA', 0, 'POINT')}">0</span>đ
+            </span>
+            <a th:href="@{/logout}">Đăng xuất</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <a th:href="@{/menu}" class="back-link">← Quay lại thực đơn</a>
+
+        <h1 class="page-title">📋 Đơn hàng của tôi</h1>
+
+        <!-- Không có đơn -->
+        <div th:if="${dsDonHang.isEmpty()}" class="empty-cart">
+            <div style="font-size: 80px;">📭</div>
+            <h2>Bạn chưa có đơn hàng nào</h2>
+            <p>Hãy đặt món đầu tiên của bạn!</p>
+            <a th:href="@{/menu}" class="btn btn-primary btn-lg">Xem thực đơn</a>
+        </div>
+
+        <!-- Có đơn -->
+        <div th:unless="${dsDonHang.isEmpty()}" class="order-list">
+
+            <div th:each="don : ${dsDonHang}" class="order-card">
+
+                <!-- Header đơn -->
+                <div class="order-header">
+                    <div>
+                        <strong th:text="'#DH' + ${don.id}">#DH001</strong>
+                        <span class="order-date"
+                              th:text="${#temporals.format(don.ngayDat, 'dd/MM/yyyy HH:mm')}">
+                            01/01/2026 12:00
+                        </span>
+                    </div>
+                    <span class="order-status"
+      th:classappend="'status-' + ${don.trangThai}"
+      th:text="${don.trangThai == 'ChoThanhToan' ? 'Chờ xác nhận' :
+                don.trangThai == 'DaThanhToan' ? 'Đã thanh toán' :
+                don.trangThai == 'DangCheBien' ? 'Đang chế biến' :
+                don.trangThai == 'DaSanSang' ? 'Đã sẵn sàng' :
+                don.trangThai == 'DaGiao' ? 'Đã giao' :
+                don.trangThai == 'DaHuy' ? 'Đã hủy' : don.trangThai}">
+    Trạng thái
+</span>
+                </div>
+
+                <!-- Thông tin -->
+                <div class="order-info">
+                    <div class="order-info-row">
+                        <span>🕐 Giờ nhận:</span>
+                        <strong th:text="${don.thoiGianNhan}">--</strong>
+                    </div>
+                    <div class="order-info-row">
+                        <span>💰 Tổng tiền:</span>
+                        <strong class="order-total"
+                                th:text="${#numbers.formatDecimal(don.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                            0đ
+                        </strong>
+                    </div>
+                </div>
+
+                <!-- Nút xem chi tiết -->
+                <div class="order-actions">
+                    <a th:href="@{/don-hang/{id}(id=${don.id})}"
+                    class="btn-detail">
+                        Xem chi tiết →
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <div th:replace="~{footer :: footer}"></div>
+
+</body>
+</html>

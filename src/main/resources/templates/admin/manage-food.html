@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý món ăn - EatNow Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div class="admin-layout">
+
+        <!-- SIDEBAR TRÁI -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-box">EN</div>
+                <span>EATNOW</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a th:href="@{/admin/dashboard}">📊 Dashboard</a>
+                <a th:href="@{/admin/mon-an}" class="active">🍜 Món ăn</a>
+                <a th:href="@{/admin/danh-muc}">📂 Danh mục</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>👋 <span th:text="${nguoiDung.hoTen}">Admin</span></p>
+                <a th:href="@{/logout}">Đăng xuất</a>
+            </div>
+        </aside>
+
+        <!-- NỘI DUNG CHÍNH -->
+        <main class="admin-main">
+
+            <div class="page-header">
+                <h1 class="page-title">🍜 Quản lý món ăn</h1>
+                <a th:href="@{/admin/mon-an/them}" class="btn btn-primary btn-lg">
+                    + Thêm món mới
+                </a>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ảnh</th>
+                            <th>Tên món</th>
+                            <th>Danh mục</th>
+                            <th>Giá</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="mon : ${dsMonAn}">
+                            <td th:text="${mon.id}">1</td>
+                             <td>
+                                <img th:src="${mon.hinhAnh}" 
+                                     th:alt="${mon.tenMon}"
+                                     style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
+                            </td>
+                            <td><strong th:text="${mon.tenMon}">Cơm gà</strong></td>
+                            <td th:text="${mon.danhMuc.tenDanhMuc}">Món mặn</td>
+                            <td>
+                                <strong style="color: #ff6b35;"
+                                        th:text="${#numbers.formatDecimal(mon.gia, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                                    0đ
+                                </strong>
+                            </td>
+                            <td>
+                                <span th:if="${mon.conHang}" class="status status-con-hang">Còn hàng</span>
+                                <span th:unless="${mon.conHang}" class="status status-het-hang">Hết hàng</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a th:href="@{/admin/mon-an/sua/{id}(id=${mon.id})}"
+                                       class="btn-edit" title="Sửa">✏️</a>
+                                    <form method="post"
+                                          th:action="@{/admin/mon-an/xoa/{id}(id=${mon.id})}"
+                                          onsubmit="return confirm('Xóa món này?');"
+                                          style="display: inline;">
+                                        <button type="submit" class="btn-delete" title="Xóa">🗑️</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PHÂN TRANG -->
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a th:if="${currentPage > 1}"
+                   th:href="@{/admin/mon-an(page=${currentPage - 1})}"
+                   class="page-btn">← Trước</a>
+
+                <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+                   th:href="@{/admin/mon-an(page=${i})}"
+                   class="page-btn"
+                   th:classappend="${i == currentPage} ? 'active' : ''"
+                   th:text="${i}">1</a>
+
+                <a th:if="${currentPage < totalPages}"
+                   th:href="@{/admin/mon-an(page=${currentPage + 1})}"
+                   class="page-btn">Sau →</a>
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

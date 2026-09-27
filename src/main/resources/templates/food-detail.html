@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${mon.tenMon} + ' - EatNow'">Chi tiết món</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <div class="logo-box">EN</div>
+            <div class="logo-text">
+                <h1>EATNOW</h1>
+                <p>Nhanh chóng • Tươi ngon • Tuyệt vời</p>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a th:href="@{/menu}">Thực đơn</a>
+            <a th:href="@{/don-hang-cua-toi}">Đơn hàng</a>
+            <a th:href="@{/gio-hang}">🛒 Giỏ hàng</a>
+            <span style="color: #f7931e; margin-left: 20px; font-weight: 600;">
+                💰 <span th:text="${#numbers.formatDecimal(nguoiDung.soDuVi, 0, 'COMMA', 0, 'POINT')}">0</span>đ
+            </span>
+            <a th:href="@{/logout}">Đăng xuất</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <!-- Nút quay lại -->
+        <a href="javascript:history.back()" class="back-link">
+    ← Quay lại thực đơn
+</a>
+        <!-- Chi tiết món ăn -->
+        <div class="detail-wrapper">
+
+            <!-- Cột trái - Ảnh -->
+            <div class="detail-img">
+                <img th:src="${mon.hinhAnh}" th:alt="${mon.tenMon}">
+            </div>
+
+            <!-- Cột phải - Thông tin -->
+            <div class="detail-info">
+                <span class="detail-category" th:text="${mon.danhMuc.tenDanhMuc}">Danh mục</span>
+
+                <h1 th:text="${mon.tenMon}">Tên món</h1>
+
+                <p class="detail-price"
+                   th:text="${#numbers.formatDecimal(mon.gia, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                    0đ
+                </p>
+
+                <div class="detail-status">
+                    <span th:if="${mon.conHang}" class="status status-con-hang">✅ Còn hàng</span>
+                    <span th:unless="${mon.conHang}" class="status status-het-hang">❌ Hết hàng</span>
+                </div>
+                                <div class="detail-rating">
+                    <span class="rating-big">⭐ <span th:text="${mon.soSaoTrungBinh}">0</span></span>
+                    <span class="rating-buy-big">• Đã bán <span th:text="${mon.luotMua}">0</span> phần</span>
+                </div>
+
+                <p class="detail-desc" th:text="${mon.moTa}">Mô tả món ăn</p>
+
+                <div class="detail-actions">
+                    <form th:if="${mon.conHang}" method="post"
+      th:action="@{/gio-hang/them/{id}(id=${mon.id})}">
+      <input type="hidden" name="fromDetail" value="true">
+
+    <!-- Radio "Có canh" - CHỈ hiện với món bắt đầu bằng "Cơm" -->
+    <div th:if="${mon.tenMon.startsWith('Cơm')}" class="form-group">
+        <label>🍲 Kèm canh?</label>
+        <div class="options">
+            <label><input type="radio" name="canh" value="Có canh" checked> Có canh</label>
+            <label><input type="radio" name="canh" value="Không canh"> Không canh</label>
+        </div>
+    </div>
+
+    <!-- Ghi chú - hiện với TẤT CẢ món -->
+    <div class="form-group">
+        <label>📝 Ghi chú</label>
+        <textarea name="ghiChu" rows="2" 
+                  placeholder=""></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg">
+        🛒 Thêm vào giỏ hàng
+    </button>
+</form>
+
+                    <button th:unless="${mon.conHang}" class="btn btn-secondary btn-lg" disabled>
+                        Hết hàng
+                    </button>
+
+                    <a th:href="@{/menu}" class="btn btn-secondary btn-lg">
+                        ← Tiếp tục chọn món
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Đánh giá -->
+        <div class="reviews-section">
+            <h2 class="section-title">
+                Đánh giá (<span th:text="${dsDanhGia.size()}">0</span>)
+            </h2>
+
+            <!-- Danh sách đánh giá -->
+            <div th:if="${dsDanhGia.isEmpty()}" class="empty-reviews">
+                <p>Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá món này!</p>
+            </div>
+
+            <div th:unless="${dsDanhGia.isEmpty()}" class="review-list">
+                <div th:each="dg : ${dsDanhGia}" class="review-item">
+                    <div class="review-header">
+                        <strong th:text="${dg.nguoiDung.hoTen}">Tên người dùng</strong>
+                        <span class="review-stars">
+                            <span th:each="i : ${#numbers.sequence(1, dg.soSao)}">⭐</span>
+                        </span>
+                    </div>
+                    <p class="review-content" th:text="${dg.noiDung}">Nội dung đánh giá</p>
+                    <small class="review-date"
+                           th:text="${#temporals.format(dg.ngayTao, 'dd/MM/yyyy HH:mm')}">
+                        01/01/2026
+                    </small>
+                </div>
+            </div>
+
+            <!-- Form gửi đánh giá -->
+            <div class="review-form">
+                <h3>Gửi đánh giá của bạn</h3>
+
+                <form method="post" th:action="@{/mon-an/{id}/danh-gia(id=${mon.id})}">
+                    <div class="form-group">
+                        <label>Số sao</label>
+                        <select name="soSao" required>
+                            <option value="5">⭐⭐⭐⭐⭐ Rất ngon</option>
+                            <option value="4">⭐⭐⭐⭐ Ngon</option>
+                            <option value="3">⭐⭐⭐ Bình thường</option>
+                            <option value="2">⭐⭐ Không ngon</option>
+                            <option value="1">⭐ Rất tệ</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nhận xét</label>
+                        <textarea name="noiDung" rows="3" required
+                                  placeholder="Chia sẻ cảm nhận của bạn về món này..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        Gửi đánh giá
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+    <div th:replace="~{footer :: footer}"></div>
+
+</body>
+</html>

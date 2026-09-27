@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thực đơn - EatNow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+     <!-- Toast thông báo -->
+    <div th:if="${thongBao}" class="toast-notification" id="toast">
+        ✅ <span th:text="${thongBao}">Thông báo</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <div class="logo-box">EN</div>
+            <div class="logo-text">
+                <h1>EATNOW</h1>
+                <p>Nhanh chóng • Tươi ngon • Tuyệt vời</p>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a th:href="@{/menu}">Thực đơn</a>
+            <a th:href="@{/don-hang-cua-toi}">Đơn hàng</a>
+            <a th:href="@{/gio-hang}">🛒 Giỏ hàng (<span th:text="${soLuongGio}">0</span>)</a>
+            <span style="color: #f7931e; font-weight: 600;">
+    <span th:text="${#numbers.formatDecimal(nguoiDung.soDuVi, 0, 'COMMA', 0, 'POINT')}">0</span>đ
+    <a th:href="@{/nap-tien}" style="background: #10b981; color: white; padding: 5px 12px; border-radius: 20px; margin-left: 8px; font-size: 12px; text-decoration: none; font-weight: 700;">
+        + Nạp
+    </a>
+</span>
+            <a th:href="@{/logout}">Đăng xuất</a>
+        </div>
+    </nav>
+
+        <!-- Dòng chữ chạy -->
+    <div class="marquee-bar">
+        <div class="marquee-content">
+            <span>🔥 Đói bụng rồi? Đặt món ngay – không cần xếp hàng!</span>
+            <span>🍜 Hôm nay ăn gì? Để EatNow lo</span>
+            <span>🎒 Tan học chưa? Ghé chọn món ngon nào!</span>
+            <span>⚡ Ăn ngon mỗi ngày – học tập tràn năng lượng</span>
+            <!-- Lặp lại để chạy liền mạch -->
+            <span>🔥 Đói bụng rồi? Đặt món ngay – không cần xếp hàng!</span>
+            <span>🍜 Hôm nay ăn gì? Để EatNow lo</span>
+            <span>🎒 Tan học chưa? Ghé chọn món ngon nào!</span>
+            <span>⚡ Ăn ngon mỗi ngày – học tập tràn năng lượng</span>
+        </div>
+    </div>
+
+        <!-- Banner với ảnh nền + overlay trắng -->
+    <div class="banner-image">
+        <div class="banner-overlay">
+            <h2 class="banner-title">Xin chào, <span th:text="${nguoiDung.hoTen}">Bạn</span>! 👋</h2>
+            <p class="banner-subtitle">Hôm nay bạn muốn ăn gì?</p>
+            <p class="banner-desc">
+                Đặt món trước – không cần xếp hàng – nhận ngay khi đến!
+            </p>
+        </div>
+    </div>
+
+    <!-- Container -->
+    <div class="container">
+
+        <!-- Thanh tìm kiếm -->
+        <form method="get" th:action="@{/menu} + '#thuc-don'" class="search-bar">
+    <input type="text" name="keyword" placeholder="🔍 Tìm kiếm món ăn..." th:value="${keyword}">
+    <button type="submit" class="btn btn-primary">Tìm</button>
+</form>
+
+                <!-- Tiêu đề Danh mục -->
+        <h3 class="section-title" id="danh-muc">Danh mục</h3>
+
+        <!-- Grid danh mục với ảnh -->
+        <div class="category-grid">
+
+            <!-- Ô "Tất cả" -->
+            <a th:href="@{/menu}" class="category-card"
+               th:classappend="${danhMucDangChon == null} ? 'active' : ''">
+                <div class="category-img" style="background-image: url('https://statics.vincom.com.vn/xu-huong/chi_tiet_xu_huong/1/14-4/3/do-an-nhanh-cho-nguoi-ban-ron.jpg');"></div>
+                <div class="category-info">
+                    <h4>Tất cả</h4>
+                </div>
+            </a>
+
+            <!-- Ô danh mục động -->
+            <a th:each="dm : ${dsDanhMuc}"
+   th:href="@{/menu(danhMuc=${dm.id})} + '#danh-muc'"
+   
+               class="category-card"
+               th:classappend="${danhMucDangChon != null and danhMucDangChon == dm.id} ? 'active' : ''">
+
+                <div class="category-img"
+                     th:style="'background-image: url(' + 
+                        ${dm.tenDanhMuc == 'Món mặn' ? 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400' :
+                          dm.tenDanhMuc == 'Món chay' ? 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400' :
+                          dm.tenDanhMuc == 'Đồ uống' ? 'https://cubes-asia.com/storage/blogs/2024-11/cac-loai-do-uong-co-chua-caffeine-pho-bien.jpg' :
+                          'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400'} + ');'">
+                </div>
+
+                <div class="category-info">
+                    <h4 th:text="${dm.tenDanhMuc}">Danh mục</h4>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Grid món ăn -->
+         <div id="thuc-don"></div>
+        <div th:if="${dsMonAn.isEmpty()}" class="empty-state">
+            <h3>😢 Không tìm thấy món ăn nào</h3>
+            <p>Thử tìm từ khóa khác hoặc chọn danh mục khác nhé!</p>
+        </div>
+
+        <div class="food-grid" th:unless="${dsMonAn.isEmpty()}">
+            <div th:each="mon : ${dsMonAn}" class="food-card">
+
+                <!-- Ảnh món ăn -->
+                <div class="food-img">
+    <img th:src="${mon.hinhAnh}" th:alt="${mon.tenMon}">
+</div>
+
+                <!-- Thông tin món ăn -->
+                <div class="food-card-body">
+                    <h3 th:text="${mon.tenMon}">Tên món</h3>
+
+                    <p class="food-desc" th:text="${mon.moTa}">Mô tả</p>
+                    <div class="food-rating">
+                        <span class="rating-stars">⭐ <span th:text="${mon.soSaoTrungBinh}">0</span></span>
+                        <span class="rating-buy" th:text="'• Đã bán ' + ${mon.luotMua}">• Đã bán 0</span>
+                    </div>
+
+                    <div class="food-footer">
+                        <span class="price"
+                              th:text="${#numbers.formatDecimal(mon.gia, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                            0đ
+                        </span>
+
+                        <span th:if="${mon.conHang}" class="status status-con-hang">Còn hàng</span>
+                        <span th:unless="${mon.conHang}" class="status status-het-hang">Hết hàng</span>
+                    </div>
+
+                    <div class="food-actions">
+                       <a th:href="@{/mon-an/{id}(id=${mon.id}, danhMuc=${danhMucDangChon}, keyword=${keyword != null ? keyword : ''})}"
+   class="btn btn-secondary btn-sm">
+    Chi tiết
+</a>
+
+                        <form th:if="${mon.conHang}" method="post"
+      th:action="@{/gio-hang/them/{id}(id=${mon.id})}">
+    <input type="hidden" name="danhMuc" th:value="${danhMucDangChon}">
+    <input type="hidden" name="keyword" th:value="${keyword}">
+    <button type="submit" class="btn btn-primary btn-sm">
+        + Thêm vào giỏ
+    </button>
+</form>
+
+                        <button th:unless="${mon.conHang}"
+                                class="btn btn-secondary btn-sm" disabled>
+                            Hết hàng
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+        <script>
+        // Tự động ẩn toast sau 2.5 giây
+        setTimeout(function() {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.style.transition = 'opacity 0.5s, transform 0.5s';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(400px)';
+                setTimeout(() => toast.remove(), 500);
+            }
+        }, 2500);
+    </script>
+    <div th:replace="~{footer :: footer}"></div>
+
+</body>
+
+</html>

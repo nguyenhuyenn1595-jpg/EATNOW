@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh toán - EatNow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <div class="logo-box">EN</div>
+            <div class="logo-text">
+                <h1>EATNOW</h1>
+                <p>Nhanh chóng • Tươi ngon • Tuyệt vời</p>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a th:href="@{/menu}">Thực đơn</a>
+            <a th:href="@{/don-hang-cua-toi}">Đơn hàng</a>
+            <a th:href="@{/gio-hang}">🛒 Giỏ hàng</a>
+            <a th:href="@{/logout}">Đăng xuất</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <h1 class="page-title">💳 Thanh toán đơn hàng</h1>
+
+        <div class="payment-wrapper">
+
+            <!-- Thông tin đơn hàng -->
+            <div class="payment-info">
+                <h2>Thông tin đơn hàng</h2>
+
+                <div class="info-row">
+                    <span>Mã đơn:</span>
+                    <strong th:text="'#DH' + ${donHang.id}">#DH001</strong>
+                </div>
+                <div class="info-row">
+                    <span>Khung giờ nhận:</span>
+                    <span th:text="${donHang.thoiGianNhan}">--</span>
+                </div>
+
+                <h3 style="margin-top: 20px;">Món đã đặt</h3>
+                <div class="payment-items">
+                    <div th:each="ct : ${donHang.chiTietList}" class="payment-item">
+                        <span>
+                            <span th:text="${ct.monAn.tenMon}">Tên món</span>
+                            <span class="qty-badge" th:text="'x' + ${ct.soLuong}">x1</span>
+                        </span>
+                        <span th:text="${#numbers.formatDecimal(ct.thanhTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
+                    </div>
+                </div>
+
+                <div class="total-row">
+                    <span>Tổng tiền:</span>
+                    <strong th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</strong>
+                </div>
+            </div>
+
+            <!-- Thanh toán -->
+            <div class="payment-method">
+                <h2>Phương thức thanh toán</h2>
+
+                                <div class="payment-options">
+                    <label class="payment-option-item">
+                        <input type="radio" name="phuongThuc" value="ViEatNow" checked form="paymentForm">
+                        <div class="option-content">
+                            <div class="option-header">
+                                <span>💰 Ví EatNow</span>
+                            </div>
+                            <p class="option-balance">
+                                Số dư: <strong th:text="${#numbers.formatDecimal(nguoiDung.soDuVi, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</strong>
+                            </p>
+                        </div>
+                    </label>
+
+                    <label class="payment-option-item">
+                        <input type="radio" name="phuongThuc" value="TienMat" form="paymentForm">
+                        <div class="option-content">
+                            <div class="option-header">
+                                <span>💵 Thanh toán khi nhận</span>
+                            </div>
+                            <p class="option-balance">Thanh toán trực tiếp tại căn tin</p>
+                        </div>
+                    </label>
+
+                                        <label class="payment-option-item">
+                        <input type="radio" name="phuongThuc" value="ChuyenKhoan" 
+                               form="paymentForm" onchange="toggleBankInfo()" id="radioChuyenKhoan">
+                        <div class="option-content">
+                            <div class="option-header">
+                                <span>🏦 Chuyển khoản</span>
+                            </div>
+                            <p class="option-balance">Chuyển khoản trước khi nhận món</p>
+                        </div>
+                    </label>
+
+                    <!-- THÔNG TIN NGÂN HÀNG - ẨN MẶC ĐỊNH -->
+                    <div id="bankInfo" class="bank-info" style="display: none;">
+                        <h4>📋 Thông tin chuyển khoản</h4>
+                        <div class="bank-row">
+                            <span>Ngân hàng:</span>
+                            <strong>Vietcombank (VCB)</strong>
+                        </div>
+                        <div class="bank-row">
+                            <span>Số tài khoản:</span>
+                            <strong>1234567890</strong>
+                        </div>
+                        <div class="bank-row">
+                            <span>Chủ tài khoản:</span>
+                            <strong>CONG TY EATNOW</strong>
+                        </div>
+                        <div class="bank-row">
+                            <span>Số tiền:</span>
+                            <strong th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</strong>
+                        </div>
+                        <div class="bank-row">
+                            <span>Nội dung CK:</span>
+                            <strong th:text="'DH' + ${donHang.id}">DH001</strong>
+                        </div>
+                        <p class="bank-note">
+                            ⚠️ Vui lòng ghi đúng nội dung chuyển khoản để được xác nhận nhanh nhất!
+                        </p>
+                    </div>
+                </div>
+
+                <div th:if="${loi}" class="alert alert-danger" th:text="${loi}"></div>
+
+                <form id="paymentForm" method="post" th:action="@{/thanh-toan/{id}/xac-nhan(id=${donHang.id})}">
+    <button type="submit" class="btn btn-primary btn-lg btn-full">
+        Xác nhận thanh toán →
+    </button>
+</form>
+
+                <a th:href="@{/gio-hang}" class="btn btn-secondary btn-lg btn-full" style="margin-top: 10px;">
+                    ← Quay lại giỏ hàng
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+    <script>
+    function toggleBankInfo() {
+        const radio = document.getElementById('radioChuyenKhoan');
+        const bankInfo = document.getElementById('bankInfo');
+        if (radio && radio.checked) {
+            bankInfo.style.display = 'block';
+        } else {
+            bankInfo.style.display = 'none';
+        }
+    }
+
+    // Ẩn khi chọn phương thức khác
+    document.querySelectorAll('input[name="phuongThuc"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            const bankInfo = document.getElementById('bankInfo');
+            if (this.value === 'ChuyenKhoan') {
+                bankInfo.style.display = 'block';
+            } else {
+                bankInfo.style.display = 'none';
+            }
+        });
+    });
+</script>
+<div th:replace="~{footer :: footer}"></div>
+
+</body>
+</html>

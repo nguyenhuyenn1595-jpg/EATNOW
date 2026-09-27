@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý danh mục - EatNow Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div class="admin-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-box">EN</div>
+                <span>EatNow</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a th:href="@{/admin/dashboard}">📊 Dashboard</a>
+                <a th:href="@{/admin/mon-an}">🍜 Món ăn</a>
+                <a th:href="@{/admin/danh-muc}" class="active">📂 Danh mục</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>👋 <span th:text="${nguoiDung.hoTen}">Admin</span></p>
+                <a th:href="@{/logout}">Đăng xuất</a>
+            </div>
+        </aside>
+
+        <!-- NỘI DUNG -->
+        <main class="admin-main">
+
+            <h1 class="page-title">📂 Quản lý danh mục</h1>
+
+            <div class="category-admin-wrapper">
+
+                <!-- FORM THÊM DANH MỤC -->
+                <div class="form-card" style="max-width: 400px;">
+                    <h3 style="margin-bottom: 20px; color: #1e2a3a;">➕ Thêm danh mục mới</h3>
+
+                    <form method="post" th:action="@{/admin/danh-muc/them}">
+                        <div class="form-group">
+                            <label>Tên danh mục *</label>
+                            <input type="text" name="tenDanhMuc" required 
+                                   placeholder="VD: Món tráng miệng">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Mô tả</label>
+                            <textarea name="moTa" rows="2" 
+                                      placeholder="Mô tả ngắn..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                            💾 Thêm danh mục
+                        </button>
+                    </form>
+                </div>
+
+                <!-- DANH SÁCH DANH MỤC -->
+                <div class="category-list-card">
+                    <h3 style="margin-bottom: 20px; color: #1e2a3a;">📋 Danh sách danh mục</h3>
+
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên danh mục</th>
+                                    <th>Mô tả</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="dm : ${dsDanhMuc}">
+                                    <td th:text="${dm.id}">1</td>
+                                    <td><strong th:text="${dm.tenDanhMuc}">Món mặn</strong></td>
+                                    <td th:text="${dm.moTa}">Mô tả</td>
+                                    <td>
+                                        <form method="post"
+                                              th:action="@{/admin/danh-muc/xoa/{id}(id=${dm.id})}"
+                                              onsubmit="return confirm('Xóa danh mục này?');"
+                                              style="display: inline;">
+                                            <button type="submit" class="btn-delete" title="Xóa">🗑️</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

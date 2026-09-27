@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng - EatNow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <div class="logo-box">EN</div>
+            <div class="logo-text">
+                <h1>EATNOW</h1>
+                <p>Nhanh chóng • Tươi ngon • Tuyệt vời</p>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a th:href="@{/menu}">Thực đơn</a>
+            <a th:href="@{/don-hang-cua-toi}">Đơn hàng</a>
+            <a th:href="@{/gio-hang}">🛒 Giỏ hàng</a>
+            <span style="color: #f7931e; margin-left: 20px; font-weight: 600;">
+                💰 <span th:text="${#numbers.formatDecimal(nguoiDung.soDuVi, 0, 'COMMA', 0, 'POINT')}">0</span>đ
+            </span>
+            <a th:href="@{/logout}">Đăng xuất</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <a th:href="@{/menu(_anchor='thuc-don')}" class="back-link">← Tiếp tục chọn món</a>
+
+        <h1 class="page-title">🛒 Giỏ hàng của bạn</h1>
+
+        <!-- Giỏ hàng trống -->
+        <div th:if="${dsChiTiet.isEmpty()}" class="empty-cart">
+            <div style="font-size: 80px;">🛒</div>
+            <h2>Giỏ hàng đang trống</h2>
+            <p>Hãy chọn món ăn yêu thích của bạn!</p>
+            <a th:href="@{/menu}" class="btn btn-primary btn-lg">Xem thực đơn</a>
+        </div>
+
+        <!-- Giỏ hàng có món -->
+        <div th:unless="${dsChiTiet.isEmpty()}">
+
+            <div class="cart-list">
+                <div th:each="item : ${dsChiTiet}" class="cart-item">
+
+                    <!-- Ảnh -->
+                    <div class="cart-item-img">
+                        <img th:src="${item.mon.hinhAnh}" th:alt="${item.mon.tenMon}">
+                    </div>
+
+                                        <!-- Thông tin -->
+                    <div class="cart-item-info">
+                        <h3 th:text="${item.mon.tenMon}">Tên món</h3>
+
+                        <!-- GHI CHÚ - THÊM DÒNG NÀY -->
+                        <p th:if="${ghiChuMap != null and ghiChuMap[item.mon.id] != null}"
+                           style="color: #f59e0b; font-size: 13px; margin: 4px 0;">
+                            📝 <span th:text="${ghiChuMap[item.mon.id]}"></span>
+                        </p>
+
+                        <p class="cart-item-price"
+                           th:text="${#numbers.formatDecimal(item.mon.gia, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                            0đ
+                        </p>
+                    </div>
+
+                    <!-- Số lượng -->
+                    <div class="cart-item-qty">
+                        <form method="post" th:action="@{/gio-hang/giam/{id}(id=${item.mon.id})}">
+                            <button type="submit" class="qty-btn">−</button>
+                        </form>
+                        <span class="qty-value" th:text="${item.soLuong}">1</span>
+                        <form method="post" th:action="@{/gio-hang/tang/{id}(id=${item.mon.id})}">
+                            <button type="submit" class="qty-btn">+</button>
+                        </form>
+                    </div>
+
+                    <!-- Thành tiền -->
+                    <div class="cart-item-total">
+                        <span th:text="${#numbers.formatDecimal(item.thanhTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                            0đ
+                        </span>
+                    </div>
+
+                    <!-- Nút xóa -->
+                    <form method="post" th:action="@{/gio-hang/xoa/{id}(id=${item.mon.id})}">
+                        <button type="submit" class="btn-xoa" title="Xóa">🗑️</button>
+                    </form>
+
+                </div>
+            </div>
+
+            <!-- Tổng tiền + Đặt món -->
+            <div class="cart-summary">
+                <div class="cart-summary-row">
+                    <span>Tổng cộng:</span>
+                    <span class="cart-total-price"
+                          th:text="${#numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                        0đ
+                    </span>
+                </div>
+                <div class="cart-summary-row">
+                    <span>Số dư ví:</span>
+                    <span th:text="${#numbers.formatDecimal(nguoiDung.soDuVi, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                        0đ
+                    </span>
+                </div>
+
+                <div class="cart-actions">
+                    <a th:href="@{/menu(_anchor='thuc-don')}" class="btn btn-secondary btn-lg">← Tiếp tục chọn</a>
+                    <a th:href="@{/dat-mon}" class="btn btn-primary btn-lg">Đặt món →</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <script>
+    if (window.location.hash === '#thuc-don') {
+        document.documentElement.style.scrollBehavior = 'auto';
+        window.addEventListener('DOMContentLoaded', function() {
+            const el = document.getElementById('thuc-don');
+            if (el) el.scrollIntoView({ block: 'start' });
+        });
+    }
+</script>
+<div th:replace="~{footer :: footer}"></div>
+
+</body>
+</html>

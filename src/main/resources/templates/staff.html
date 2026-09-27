@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nhân viên căn tin - EatNow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <div class="logo-box">EN</div>
+            <div class="logo-text">
+                <h1>EATNOW - NHÂN VIÊN</h1>
+                <p>Xử lý đơn hàng</p>
+            </div>
+        </div>
+                <div class="navbar-menu">
+            <span style="color: #1e2a3a; font-weight: 700; font-size: 20px;">
+                 <span th:text="${nguoiDung.hoTen}">Nhân viên</span>
+            </span>
+            <a th:href="@{/logout}" style="color: #ff6b35; font-weight: 700; font-size: 18px;">
+                Đăng xuất
+            </a>
+        </div>
+    </nav>
+        <div class="container">
+
+        <h1 class="page-title">🍳 Quản lý đơn hàng</h1>
+
+        <!-- 3 TAB -->
+        <div class="staff-tabs">
+            <button class="staff-tab active" onclick="showTab('don-moi', this)">
+                🔔 Đơn mới (<span th:text="${dsDonMoi.size()}">0</span>)
+            </button>
+            <button class="staff-tab" onclick="showTab('dang-lam', this)">
+                🔥 Đang làm (<span th:text="${dsDangCheBien.size()}">0</span>)
+            </button>
+            <button class="staff-tab" onclick="showTab('da-xong', this)">
+                🍽️ Đã xong (<span th:text="${dsSanSang.size()}">0</span>)
+            </button>
+        </div>
+
+        <!-- TAB 1: ĐƠN MỚI -->
+        <div id="tab-don-moi" class="tab-content active">
+            <div th:if="${dsDonMoi.isEmpty()}" class="empty-cart" style="padding: 40px;">
+                <p>🎉 Không có đơn mới nào!</p>
+            </div>
+
+            <div th:unless="${dsDonMoi.isEmpty()}" class="staff-order-list">
+                <div th:each="don : ${dsDonMoi}" class="staff-order-card">
+                    <div class="staff-order-header">
+                        <div>
+                            <strong th:text="'#DH' + ${don.id}">#DH001</strong>
+                            <span class="order-date" th:text="${#temporals.format(don.ngayDat, 'HH:mm dd/MM')}">12:00</span>
+                        </div>
+                        <span class="staff-badge staff-badge-new">MỚI</span>
+                    </div>
+
+                    <div class="staff-order-info">
+                        <p>👤 <span th:text="${don.nguoiDung.hoTen}">Khách</span></p>
+                        <p>🕐 Nhận: <strong th:text="${don.thoiGianNhan}">--</strong></p>
+                        <p>💰 <strong th:text="${#numbers.formatDecimal(don.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</strong></p>
+                    </div>
+
+                    <div class="staff-order-items">
+                        <div th:each="ct : ${don.chiTietList}" class="staff-item">
+                            <span th:text="${ct.monAn.tenMon}">Món</span>
+                            <span th:text="'x' + ${ct.soLuong}">x1</span>
+                        </div>
+                    </div>
+
+                    <div class="staff-actions">
+                        <form method="post" th:action="@{/staff/xac-nhan/{id}(id=${don.id})}">
+                            <button type="submit" class="btn btn-primary btn-sm">✅ Xác nhận</button>
+                        </form>
+                        <form method="post" th:action="@{/staff/tu-choi/{id}(id=${don.id})}"
+                              onsubmit="return confirm('Từ chối đơn này?');">
+                            <button type="submit" class="btn btn-danger btn-sm">❌ Từ chối</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: ĐANG LÀM -->
+        <div id="tab-dang-lam" class="tab-content">
+            <div th:if="${dsDangCheBien.isEmpty()}" class="empty-cart" style="padding: 40px;">
+                <p>Không có đơn nào đang chế biến.</p>
+            </div>
+
+            <div th:unless="${dsDangCheBien.isEmpty()}" class="staff-order-list">
+                <div th:each="don : ${dsDangCheBien}" class="staff-order-card">
+                    <div class="staff-order-header">
+                        <div>
+                            <strong th:text="'#DH' + ${don.id}">#DH001</strong>
+                            <span class="order-date" th:text="${#temporals.format(don.ngayDat, 'HH:mm dd/MM')}">12:00</span>
+                        </div>
+                        <span class="staff-badge staff-badge-cooking">ĐANG LÀM</span>
+                    </div>
+
+                    <div class="staff-order-info">
+                        <p>👤 <span th:text="${don.nguoiDung.hoTen}">Khách</span></p>
+                        <p>🕐 Nhận: <strong th:text="${don.thoiGianNhan}">--</strong></p>
+                    </div>
+
+                    <div class="staff-order-items">
+                        <div th:each="ct : ${don.chiTietList}" class="staff-item">
+                            <span th:text="${ct.monAn.tenMon}">Món</span>
+                            <span th:text="'x' + ${ct.soLuong}">x1</span>
+                        </div>
+                    </div>
+
+                    <div class="staff-actions">
+                        <form method="post" th:action="@{/staff/san-sang/{id}(id=${don.id})}">
+                            <button type="submit" class="btn btn-primary btn-sm">🍽️ Đã sẵn sàng</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: ĐÃ XONG -->
+        <div id="tab-da-xong" class="tab-content">
+            <div th:if="${dsSanSang == null or dsSanSang.isEmpty()}" class="empty-cart" style="padding: 40px;">
+                <p>Không có đơn nào sẵn sàng.</p>
+            </div>
+
+            <div th:if="${dsSanSang != null and !dsSanSang.isEmpty()}" class="staff-order-list">
+                <div th:each="don : ${dsSanSang}" class="staff-order-card" style="border-left-color: #10b981;">
+                    <div class="staff-order-header">
+                        <div>
+                            <strong th:text="'#DH' + ${don.id}">#DH001</strong>
+                            <span class="order-date" th:text="${#temporals.format(don.ngayDat, 'HH:mm dd/MM')}">12:00</span>
+                        </div>
+                        <span class="staff-badge" style="background: #d1fae5; color: #065f46;">SẴN SÀNG</span>
+                    </div>
+
+                    <div class="staff-order-info">
+                        <p>👤 <span th:text="${don.nguoiDung.hoTen}">Khách</span></p>
+                        <p>🕐 Nhận: <strong th:text="${don.thoiGianNhan}">--</strong></p>
+                    </div>
+
+                    <div class="staff-actions">
+                        <form method="post" th:action="@{/staff/da-giao/{id}(id=${don.id})}">
+                            <button type="submit" class="btn btn-primary btn-sm">✅ Đã xong</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+    function showTab(tabName, btn) {
+        // Ẩn tất cả tab
+        document.querySelectorAll('.tab-content').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        
+        // Bỏ active tất cả nút
+        document.querySelectorAll('.staff-tab').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        
+        // Hiện tab được chọn
+        document.getElementById('tab-' + tabName).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // Đọc tab từ URL khi load (VD: /staff?tab=dang-lam)
+    window.addEventListener('load', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab) {
+            const btns = document.querySelectorAll('.staff-tab');
+            let idx = 0;
+            if (tab === 'dang-lam') idx = 1;
+            if (tab === 'da-xong') idx = 2;
+            showTab(tab, btns[idx]);
+        }
+    });
+</script>
+</script>
+<div th:replace="~{footer :: footer}"></div>
+
+
+
+</body>
+</html>

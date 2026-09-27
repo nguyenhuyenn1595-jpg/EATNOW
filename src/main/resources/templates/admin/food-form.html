@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${cheDo == 'them' ? 'Thêm món - EatNow' : 'Sửa món - EatNow'}">Form món ăn</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div class="admin-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-box">EN</div>
+                <span>EatNow</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a th:href="@{/admin/dashboard}">📊 Dashboard</a>
+                <a th:href="@{/admin/mon-an}" class="active">🍜 Món ăn</a>
+                <a th:href="@{/admin/danh-muc}">📂 Danh mục</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>👋 <span th:text="${nguoiDung.hoTen}">Admin</span></p>
+                <a th:href="@{/logout}">Đăng xuất</a>
+            </div>
+        </aside>
+
+        <!-- NỘI DUNG -->
+        <main class="admin-main">
+
+            <a th:href="@{/admin/mon-an}" class="back-link">← Quay lại danh sách</a>
+
+            <h1 class="page-title"
+                th:text="${cheDo == 'them' ? '➕ Thêm món mới' : '✏️ Sửa món ăn'}">
+                Form món ăn
+            </h1>
+
+            <div class="form-card">
+
+                <!-- FORM THÊM -->
+                <form th:if="${cheDo == 'them'}"
+                      method="post"
+                      th:action="@{/admin/mon-an/them}">
+
+                    <div class="form-group">
+                        <label>Tên món *</label>
+                        <input type="text" name="tenMon" required 
+                               placeholder="VD: Cơm gà chiên">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Giá (VNĐ) *</label>
+                        <input type="number" name="gia" required min="0" step="1000"
+                               placeholder="35000">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Link ảnh</label>
+                        <input type="text" name="hinhAnh" 
+                               placeholder="https://...">
+                        <small>Dán link ảnh (Unsplash, Google...)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mô tả</label>
+                        <textarea name="moTa" rows="3" 
+                                  placeholder="VD: Cơm trắng với gà chiên giòn"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Danh mục *</label>
+                        <select name="idDanhMuc" required>
+                            <option value="">-- Chọn danh mục --</option>
+                            <option th:each="dm : ${dsDanhMuc}"
+                                    th:value="${dm.id}"
+                                    th:text="${dm.tenDanhMuc}">
+                                Món mặn
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trạng thái</label>
+                        <div class="options">
+                            <label>
+                                <input type="radio" name="conHang" value="true" checked>
+                                ✅ Còn hàng
+                            </label>
+                            <label>
+                                <input type="radio" name="conHang" value="false">
+                                ❌ Hết hàng
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a th:href="@{/admin/mon-an}" class="btn btn-secondary btn-lg">Hủy</a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            💾 Lưu món
+                        </button>
+                    </div>
+
+                </form>
+
+                <!-- FORM SỬA -->
+                <form th:if="${cheDo == 'sua'}"
+                      method="post"
+                      th:action="@{/admin/mon-an/sua/{id}(id=${monAn.id})}">
+
+                    <div class="form-group">
+                        <label>Tên món *</label>
+                        <input type="text" name="tenMon" required
+                               th:value="${monAn.tenMon}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Giá (VNĐ) *</label>
+                        <input type="number" name="gia" required min="0" step="1000"
+                               th:value="${monAn.gia}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Link ảnh</label>
+                        <input type="text" name="hinhAnh"
+                               th:value="${monAn.hinhAnh}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mô tả</label>
+                        <textarea name="moTa" rows="3"
+                                  th:text="${monAn.moTa}"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Danh mục *</label>
+                        <select name="idDanhMuc" required>
+                            <option th:each="dm : ${dsDanhMuc}"
+                                    th:value="${dm.id}"
+                                    th:text="${dm.tenDanhMuc}"
+                                    th:selected="${dm.id == monAn.danhMuc.id}">
+                                Món mặn
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trạng thái</label>
+                        <div class="options">
+                            <label>
+                                <input type="radio" name="conHang" value="true"
+                                       th:checked="${monAn.conHang}">
+                                ✅ Còn hàng
+                            </label>
+                            <label>
+                                <input type="radio" name="conHang" value="false"
+                                       th:checked="${!monAn.conHang}">
+                                ❌ Hết hàng
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a th:href="@{/admin/mon-an}" class="btn btn-secondary btn-lg">Hủy</a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            💾 Cập nhật
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

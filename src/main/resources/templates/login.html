@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - EatNow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <div class="logo-box">EN</div>
+            <div class="logo-text">
+                <h1>EATNOW</h1>
+                <p>Nhanh chóng • Tươi ngon • Tuyệt vời</p>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a th:href="@{/login}">Đăng nhập</a>
+            <a th:href="@{/register}" class="btn-register">Đăng ký</a>
+        </div>
+    </nav>
+
+    <!-- Login wrapper -->
+    <div class="login-wrapper">
+
+        <!-- Cột trái -->
+        <div class="login-left">
+            <div class="brand-circle">
+                <span>EN</span>
+            </div>
+
+            <div class="brand-name">
+                <span class="text-eat">Eat</span><span class="text-now">Now</span>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon purple">🎓</div>
+                    <span>Đặt món ăn yêu thích của bạn ngay lập tức</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon green">👥</div>
+                    <span>Quản lý đơn hàng và đặt món của bạn</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải - form đăng nhập -->
+        <div class="login-right">
+            <div class="login-card">
+                <h2>Chào mừng trở lại!</h2>
+                <p class="login-subtitle">
+                    Bạn mới đến với EatNow?
+                    <a th:href="@{/register}">Tham gia cùng chúng tôi tại đây!</a>
+                </p>
+
+                <div th:if="${loi}" class="alert alert-danger" th:text="${loi}"></div>
+                <div th:if="${thanhCong}" class="alert alert-success" th:text="${thanhCong}"></div>
+
+                <form method="post" th:action="@{/login}">
+                    <div class="form-group">
+                        <label>Địa chỉ email</label>
+                        <input type="email" name="email" required
+                               placeholder="Nhập email của bạn">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mật khẩu</label>
+                        <input type="password" name="matKhau" required
+                               placeholder="Nhập mật khẩu của bạn">
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        Đăng nhập →
+                    </button>
+                </form>
+                <div style="margin-top: 25px; padding: 16px; background: #fef9f3; border-radius: 10px; border: 1px dashed #e5e7eb; font-size: 14px; color: #4b5563; line-height: 1.8;">
+                    
+                    <span>Sinh viên: <code>sinhvien@st.edu.vn</code> / <code>123456</code></span><br>
+                    <span> Giảng viên: <code>giangvien@edu.vn</code> / <code>123456</code></span><br>
+                    <span> Nhân viên: <code>nhanvien@canteen.vn</code> / <code>123456</code></span><br>
+                    <span> Admin: <code>admin@eatnow.vn</code> / <code>123456</code></span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

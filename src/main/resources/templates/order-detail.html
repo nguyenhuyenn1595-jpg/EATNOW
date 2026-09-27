@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết đơn hàng - EatNow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <div class="logo-box">EN</div>
+            <div class="logo-text">
+                <h1>EATNOW</h1>
+                <p>Nhanh chóng • Tươi ngon • Tuyệt vời</p>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a th:href="@{/menu}">Thực đơn</a>
+            <a th:href="@{/don-hang-cua-toi}">Đơn hàng</a>
+            <a th:href="@{/gio-hang}">🛒 Giỏ hàng</a>
+            <span style="color: #f7931e; margin-left: 20px; font-weight: 600;">
+                💰 <span th:text="${#numbers.formatDecimal(nguoiDung.soDuVi, 0, 'COMMA', 0, 'POINT')}">0</span>đ
+            </span>
+            <a th:href="@{/logout}">Đăng xuất</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <a th:href="@{/don-hang-cua-toi}" class="back-link">← Danh sách đơn hàng</a>
+
+        <!-- Thông báo thanh toán thành công -->
+        <div th:if="${param.thanhToan == 'thanhcong'}" class="alert alert-success">
+            ✅ Đặt hàng thành công! Đơn hàng của bạn đã được ghi nhận.
+        </div>
+
+        <h1 class="page-title">📦 Chi tiết đơn hàng</h1>
+
+        <!-- Thông tin chung -->
+        <div class="detail-order-header">
+            <div>
+                <h2 th:text="'#DH' + ${donHang.id}">#DH001</h2>
+                <p class="order-time"
+                   th:text="'Đặt lúc: ' + ${#temporals.format(donHang.ngayDat, 'dd/MM/yyyy HH:mm')}">
+                    Đặt lúc: --
+                </p>
+            </div>
+            <span class="order-status"
+                  th:classappend="'status-' + ${donHang.trangThai}"
+                  th:text="${donHang.trangThai == 'ChoThanhToan' ? 'Chờ xác nhận' :
+                            donHang.trangThai == 'DaThanhToan' ? 'Đã thanh toán' :
+                            donHang.trangThai == 'DangCheBien' ? 'Đang chế biến' :
+                            donHang.trangThai == 'DaSanSang' ? 'Đã sẵn sàng' :
+                            donHang.trangThai == 'DaGiao' ? 'Đã giao' :
+                            donHang.trangThai == 'DaHuy' ? 'Đã hủy' : donHang.trangThai}">
+                Trạng thái
+            </span>
+        </div>
+
+        <!-- Thông tin giao hàng -->
+        <div class="detail-order-info">
+            <div class="info-box">
+                <span class="info-label">🕐 Giờ nhận món</span>
+                <strong th:text="${donHang.thoiGianNhan}">--</strong>
+            </div>
+            <div class="info-box">
+    <span class="info-label">💳 Phương thức</span>
+    <strong th:text="${phuongThuc == 'ViEatNow' ? 'Ví EatNow' :
+                       phuongThuc == 'TienMat' ? 'Tiền mặt khi nhận' :
+                       phuongThuc == 'ChuyenKhoan' ? 'Chuyển khoản' :
+                       'Chưa thanh toán'}">
+        --
+    </strong>
+</div>
+        </div>
+
+        <!-- Danh sách món -->
+        <h3 class="section-title">Món đã đặt</h3>
+        <div class="detail-order-items">
+
+            <div th:each="ct : ${donHang.chiTietList}" class="detail-order-item">
+
+                <div class="item-img">
+                    <img th:src="${ct.monAn.hinhAnh}" th:alt="${ct.monAn.tenMon}">
+                </div>
+
+                <div class="item-info">
+                    <h4 th:text="${ct.monAn.tenMon}">Tên món</h4>
+                    <p th:text="${#numbers.formatDecimal(ct.donGia, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</p>
+                </div>
+
+                <div class="item-qty">
+                    <span th:text="'x' + ${ct.soLuong}">x1</span>
+                </div>
+
+                <div class="item-total">
+                    <span th:text="${#numbers.formatDecimal(ct.thanhTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Tổng tiền -->
+        <div class="detail-order-total">
+            <span>Tổng cộng:</span>
+            <strong th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</strong>
+        </div>
+
+        <!-- Nút hành động -->
+        <div class="detail-order-actions">
+
+            <!-- Hủy đơn - chỉ hiện khi chưa thanh toán -->
+            <form th:if="${donHang.trangThai == 'ChoThanhToan'}"
+                  method="post"
+                  th:action="@{/don-hang/{id}/huy(id=${donHang.id})}"
+                  onsubmit="return confirm('Bạn có chắc muốn hủy đơn này không?');">
+                <button type="submit" class="btn btn-danger btn-lg">❌ Hủy đơn hàng</button>
+            </form>
+
+            <a th:href="@{/menu}" class="btn btn-primary btn-lg">🍜 Đặt thêm món</a>
+        </div>
+
+    </div>
+    <div th:replace="~{footer :: footer}"></div>
+
+</body>
+</html>

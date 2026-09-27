@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<footer th:fragment="footer" class="footer">
+    <div class="footer-content">
+
+        <!-- Cột 1: Logo + Mô tả -->
+        <div class="footer-col">
+            <div class="footer-logo">
+                <div class="logo-box">EN</div>
+                <span>EatNow</span>
+            </div>
+            <p class="footer-desc">
+                Đặt món nhanh chóng — không cần xếp hàng.<br>
+                Trải nghiệm ẩm thực tiện lợi tại căn tin!
+            </p>
+        </div>
+
+        <!-- Cột 2: Liên kết -->
+        <div class="footer-col">
+            <h4>Liên kết</h4>
+            <ul>
+                <li><a th:href="@{/menu}">Thực đơn</a></li>
+                <li><a th:href="@{/don-hang-cua-toi}">Đơn hàng</a></li>
+                <li><a th:href="@{/gio-hang}">Giỏ hàng</a></li>
+                <li><a th:href="@{/nap-tien}">Nạp tiền</a></li>
+            </ul>
+        </div>
+
+        <!-- Cột 3: Liên hệ -->
+        <div class="footer-col">
+            <h4>Liên hệ</h4>
+            <ul>
+                <li>📞 0123 456 789</li>
+                <li>📧 eatnow@edu.vn</li>
+                <li>📍 Căn tin trường</li>
+            </ul>
+        </div>
+
+        <!-- Cột 4: Giờ mở cửa -->
+        <div class="footer-col">
+            <h4>Giờ mở cửa</h4>
+            <ul>
+                <li>🕐 7:00 — 17:00</li>
+                <li>Thứ 2 — Thứ 6</li>
+                <li>Nghỉ Thứ 7, CN</li>
+            </ul>
+        </div>
+
+    </div>
+
+    
+</footer>
+
+</body>
+</html>

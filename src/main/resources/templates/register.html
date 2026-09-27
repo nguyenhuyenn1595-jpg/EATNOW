@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - EatNow</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-logo">
+            <div class="logo-box">EN</div>
+            <div class="logo-text">
+                <h1>EATNOW</h1>
+                <p>Nhanh chóng • Tươi ngon • Tuyệt vời</p>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a th:href="@{/login}">Đăng nhập</a>
+            <a th:href="@{/register}" class="btn-register">Đăng ký</a>
+        </div>
+    </nav>
+
+    <!-- Register wrapper -->
+    <div class="login-wrapper">
+
+        <!-- Cột trái -->
+        <div class="login-left">
+            <div class="brand-circle">
+                <span>EN</span>
+            </div>
+
+            <div class="brand-name">
+                <span class="text-eat">Eat</span><span class="text-now">Now</span>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon purple">🎓</div>
+                    <span>Đặt món ăn yêu thích của bạn ngay lập tức</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon green">👥</div>
+                    <span>Quản lý đơn hàng và đặt món của bạn</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon purple">⚡</div>
+                    <span>Không cần xếp hàng — đặt trước, nhận ngay</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải - form đăng ký -->
+        <div class="login-right">
+            <div class="login-card">
+                <h2>Tạo tài khoản</h2>
+                <p class="login-subtitle">
+                    Đã có tài khoản?
+                    <a th:href="@{/login}">Đăng nhập ngay!</a>
+                </p>
+
+                <div th:if="${loi}" class="alert alert-danger" th:text="${loi}"></div>
+
+                <form method="post" th:action="@{/register}">
+                    <div class="form-group">
+                        <label>Họ và tên</label>
+                        <input type="text" name="hoTen" required
+                               placeholder="Nguyễn Văn A">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Địa chỉ email</label>
+                        <input type="email" name="email" required
+                               placeholder="sinhvien@st.edu.vn">
+                        <small style="color: #6b7280; font-size: 13px; display: block; margin-top: 6px;">
+                            Sinh viên: <code>@st.edu.vn</code> • Giảng viên: <code>@edu.vn</code>
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mật khẩu</label>
+                        <input type="password" name="matKhau" required
+                               placeholder="Tối thiểu 6 ký tự">
+                    </div>
+                    <div class="form-group">
+                        <label>Xác nhận mật khẩu</label>
+                        <input type="password" name="xacNhanMatKhau" id="xacNhanMatKhau" required
+                               placeholder="Nhập lại mật khẩu">
+                        <small id="thongBaoMatKhau" style="font-size: 13px; display: block; margin-top: 6px;"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Số điện thoại</label>
+                        <input type="text" name="sdt"
+                               placeholder="0901234567">
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        Đăng ký →
+                    </button>
+                </form>
+                <!-- THÊM NÚT GOOGLE VÀO ĐÂY -->
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 20px; margin-bottom: 20px;">
+                    <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+                    <span style="color: #9ca3af; font-size: 13px;">HOẶC</span>
+                    <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+                </div>
+
+                <button type="button" class="btn-google" onclick="alert('Tính năng đăng ký bằng Google sẽ sớm được cập nhật!')">
+                    <svg width="20" height="20" viewBox="0 0 48 48" style="margin-right: 10px;">
+                        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                    </svg>
+                    Đăng ký với Google
+                </button>
+
+                <!-- Khung ghi chú phân biệt vai trò -->
+                <div style="margin-top: 25px; padding: 16px; background: #fef9f3; border-radius: 10px; border: 1px dashed #e5e7eb; font-size: 14px; color: #4b5563; line-height: 1.8;">
+                    <strong style="color: #1e2a3a;">📌 Lưu ý:</strong><br>
+                    <span>• Email đuôi <code>@st.edu.vn</code> → tự động gán vai trò <strong>Sinh viên</strong></span><br>
+                    <span>• Email đuôi <code>@edu.vn</code> → tự động gán vai trò <strong>Giảng viên</strong></span><br>
+                    <span>• Email khác → tự động gán vai trò <strong>Khách</strong></span>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+    <script>
+    // Kiểm tra mật khẩu khớp nhau realtime
+    const matKhau = document.getElementById('matKhau');
+    const xacNhanMatKhau = document.getElementById('xacNhanMatKhau');
+    const thongBao = document.getElementById('thongBaoMatKhau');
+
+    function kiemTraMatKhau() {
+        if (xacNhanMatKhau.value === '') {
+            thongBao.textContent = '';
+            return;
+        }
+        if (matKhau.value === xacNhanMatKhau.value) {
+            thongBao.textContent = '✅ Mật khẩu khớp';
+            thongBao.style.color = '#10b981';
+        } else {
+            thongBao.textContent = '❌ Mật khẩu không khớp';
+            thongBao.style.color = '#dc2626';
+        }
+    }
+
+    matKhau.addEventListener('input', kiemTraMatKhau);
+    xacNhanMatKhau.addEventListener('input', kiemTraMatKhau);
+
+    // Chặn submit nếu 2 mật khẩu không khớp
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (matKhau.value !== xacNhanMatKhau.value) {
+            e.preventDefault();
+            alert('Mật khẩu xác nhận không khớp!');
+        }
+    });
+</script>
+
+</body>
+</html>

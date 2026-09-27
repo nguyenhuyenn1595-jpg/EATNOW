@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - EatNow Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div class="admin-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-box">EN</div>
+                <span>EatNow</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a th:href="@{/admin/dashboard}" class="active">📊 Dashboard</a>
+                <a th:href="@{/admin/mon-an}">🍜 Món ăn</a>
+                <a th:href="@{/admin/danh-muc}">📂 Danh mục</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>👋 <span th:text="${nguoiDung.hoTen}">Admin</span></p>
+                <a th:href="@{/logout}">Đăng xuất</a>
+            </div>
+        </aside>
+
+        <!-- NỘI DUNG -->
+        <main class="admin-main">
+
+            <h1 class="page-title">📊 Dashboard</h1>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #ff6b35, #f7931e);">📦</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Tổng đơn hàng</p>
+                        <h2 class="stat-value" th:text="${tongDonHang}">0</h2>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #60a5fa);">🍜</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Món ăn</p>
+                        <h2 class="stat-value" th:text="${tongMonAn}">0</h2>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #a855f7, #8b5cf6);">👥</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Người dùng</p>
+                        <h2 class="stat-value" th:text="${tongNguoiDung}">0</h2>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #34d399);">💰</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Doanh thu</p>
+                        <h2 class="stat-value"
+                            th:text="${#numbers.formatDecimal(tongDoanhThu, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                            0đ
+                        </h2>
+                    </div>
+                </div>
+
+            </div>
+
+            <h2 class="section-title" style="margin-top: 40px;">📋 Đơn hàng gần đây</h2>
+
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="don : ${dsDonHang}">
+                            <td><strong th:text="'#DH' + ${don.id}">#DH001</strong></td>
+                            <td th:text="${don.nguoiDung.hoTen}">Khách</td>
+                            <td th:text="${#temporals.format(don.ngayDat, 'dd/MM HH:mm')}">01/01 12:00</td>
+                            <td>
+                                <strong style="color: #ff6b35;"
+                                        th:text="${#numbers.formatDecimal(don.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                                    0đ
+                                </strong>
+                            </td>
+                            <td>
+                                <span class="order-status"
+                                      th:classappend="'status-' + ${don.trangThai}"
+                                      th:text="${don.trangThai == 'ChoThanhToan' ? 'Chờ xác nhận' :
+                                                don.trangThai == 'DaThanhToan' ? 'Đã thanh toán' :
+                                                don.trangThai == 'DangCheBien' ? 'Đang chế biến' :
+                                                don.trangThai == 'DaSanSang' ? 'Đã sẵn sàng' :
+                                                don.trangThai == 'DaGiao' ? 'Đã giao' :
+                                                don.trangThai == 'DaHuy' ? 'Đã hủy' : don.trangThai}">
+                                    Trạng thái
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PHÂN TRANG -->
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a th:if="${currentPage > 1}"
+                   th:href="@{/admin/dashboard(page=${currentPage - 1})}"
+                   class="page-btn">← Trước</a>
+
+                <a th:each="i : ${#numbers.sequence(1, totalPages)}"
+                   th:href="@{/admin/dashboard(page=${i})}"
+                   class="page-btn"
+                   th:classappend="${i == currentPage} ? 'active' : ''"
+                   th:text="${i}">1</a>
+
+                <a th:if="${currentPage < totalPages}"
+                   th:href="@{/admin/dashboard(page=${currentPage + 1})}"
+                   class="page-btn">Sau →</a>
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
